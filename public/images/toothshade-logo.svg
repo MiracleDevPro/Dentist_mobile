@@ -1,0 +1,15 @@
+<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="500" fill="black"/>
+  <path d="M 25 180 C 43 134 79 127 104 127 C 135 127 145 153 149 176 C 161 138 203 128 226 128 C 249 128 257 149 261 168 C 271 136 303 126 326 126 C 349 126 364 147 369 167 C 370 172 371 180 372 186 C 379 150 411 130 436 130 C 457 130 474 150 478 173 C 479 177 479 181 480 186 C 485 155 513 143 538 143 C 563 143 578 163 582 186 C 583 193 584 199 585 205 C 591 178 612 162 627 145 C 649 121 670 112 698 112 C 737 112 754 137 760 174 C 770 121 804 110 835 110 C 859 110 876 131 880 151 C 884 171 884 191 888 211 C 900 174 928 166 952 166 C 976 166 987 187 992 207 L 992 370 L 25 370 Z" fill="black"/>
+  <text x="63" y="170" font-family="cursive" font-size="150" fill="white">ToothShade</text>
+  <text x="63" y="270" font-family="sans-serif" font-size="60" fill="white">Dental AI shade matching tool</text>
+  <g transform="translate(900, 365) scale(0.8)">
+    <path d="M60,20 L90,20 L90,50 C90,65 80,75 65,75 L35,75 C20,75 10,65 10,50 L10,20 L40,20 L40,50 C40,55 45,60 50,60 C55,60 60,55 60,50 L60,20 Z" fill="white"/>
+    <rect x="70" y="35" width="50" height="35" rx="5" fill="white" stroke="black" stroke-width="2"/>
+    <text x="80" y="60" font-family="sans-serif" font-size="24" fill="black" font-weight="bold">AI</text>
+    <path d="M75,10 L100,10 L105,15 L105,30 L75,30 Z" fill="white"/>
+    <circle cx="90" cy="20" r="2" fill="black"/>
+    <path d="M50,10 l5,-5 l5,5" stroke="white" stroke-width="2" fill="none"/>
+    <path d="M70,10 l5,-5 l5,5" stroke="white" stroke-width="2" fill="none"/>
+  </g>
+</svg>

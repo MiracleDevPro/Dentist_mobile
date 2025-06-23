@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100%" height="100%" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-58,-306.5)">
+        <g transform="matrix(1,0,0,1,57.9999,306.5)">
+            <rect id="Icon" x="0.0001" y="0" width="24" height="24" style="fill:none;"/>
+            <g id="Icon1" serif:id="Icon">
+                <g transform="matrix(1,0,0,1,0.0001,0)">
+                    <path d="M16,8L14,8L14,16L10,16L10,8L8,8L12,4L16,8Z" style="fill:rgb(83,83,83);fill-rule:nonzero;"/>
+                    <path d="M4,22L4,17L6,17L6,20L18,20L18,17L20,17L20,22L4,22Z" style="fill:rgb(83,83,83);fill-rule:nonzero;"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

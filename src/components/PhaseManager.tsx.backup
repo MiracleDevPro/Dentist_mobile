@@ -1,0 +1,564 @@
+import React, { useState } from 'react';
+import { useWorkflow } from '@/contexts/WorkflowContext';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight, RotateCcw, ChevronDown, Share, Sparkles, Copy, Check, Info } from 'lucide-react';
+import { useFeatures } from '@/contexts/FeaturesContext';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { WorkflowStepper } from './WorkflowStepper';
+
+// Simple phase component placeholders to avoid import errors
+// We'll implement these fully in the next phase
+const UploadPhase: React.FC = () => (
+  <div className="p-6 text-center">
+    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+      <div className="w-16 h-16 mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-gray-400">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Image</h3>
+      <p className="text-sm text-gray-500 mb-4">Drag and drop or click to upload</p>
+      <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md text-gray-800 transition-colors">
+        Select Image
+      </button>
+    </div>
+  </div>
+);
+
+const CalibrationPhase: React.FC = () => (
+  <div className="p-6">
+    <h3 className="text-lg font-medium text-gray-900 mb-4">Calibration</h3>
+    <div className="border border-gray-200 rounded-lg p-4 mb-4">
+      <div className="aspect-video bg-gray-100 rounded-md mb-4 flex items-center justify-center">
+        <p className="text-gray-500">Calibration Image Preview</p>
+      </div>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Circle Size</label>
+          <div className="h-2 bg-gray-200 rounded-full">
+            <div className="h-2 bg-gray-600 rounded-full" style={{width: '40%'}}></div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-500">Exposure Masking</span>
+          <div className="w-10 h-6 bg-gray-200 rounded-full relative">
+            <div className="w-4 h-4 bg-white rounded-full absolute top-1 left-1 shadow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const AnalysisPhase: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'main' | 'technical' | 'ai'>('main');
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(true);
+  const [linkCopied, setLinkCopied] = useState(false);
+  
+  // Function to copy link for sharing with lab technicians
+  const handleCopyLink = () => {
+    // In a real implementation, this would generate a unique link to this specific analysis
+    navigator.clipboard.writeText(window.location.href);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000); // Reset after 2 seconds
+  };
+  
+  return (
+    <div className="p-6">
+      <div className="flex flex-col space-y-3 mb-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium text-gray-900">Color Analysis</h3>
+          
+          {/* Share Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyLink}
+            className="flex items-center gap-2 text-gray-700 border-gray-300 hover:bg-gray-50"
+          >
+            {linkCopied ? (
+              <>
+                <Check className="w-4 h-4 text-green-500" />
+                <span className="text-green-500">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy Link</span>
+              </>
+            )}
+          </Button>
+        </div>
+        
+        {/* Tabs */}
+        <div className="flex rounded-lg overflow-hidden border border-gray-200">
+          <button 
+            onClick={() => setActiveTab('main')}
+            className={`px-3 py-1.5 text-sm font-medium transition-colors flex-1 ${activeTab === 'main' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            Main View
+          </button>
+          <button 
+            onClick={() => setActiveTab('technical')}
+            className={`px-3 py-1.5 text-sm font-medium transition-colors flex-1 ${activeTab === 'technical' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            Color Data
+          </button>
+          <button 
+            onClick={() => setActiveTab('ai')}
+            className={`px-3 py-1.5 text-sm font-medium transition-colors flex-1 ${activeTab === 'ai' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            <div className="flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 mr-1" />
+              AI
+            </div>
+          </button>
+        </div>
+      </div>
+      
+      {activeTab === 'main' ? (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4">
+          <div className="aspect-video bg-gray-100 rounded-md mb-4 flex items-center justify-center">
+            <p className="text-gray-500">Analysis Canvas</p>
+          </div>
+          
+          {/* Main analysis results */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="p-3 bg-gray-50 rounded-md">
+              <p className="text-sm font-medium">Detected Shade</p>
+              <p className="text-xl font-bold">A2</p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-md">
+              <p className="text-sm font-medium">Confidence</p>
+              <p className="text-xl font-bold">92%</p>
+            </div>
+          </div>
+          
+          {/* Clinical layering suggestions */}
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">Clinical Layering Suggestions</h4>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="p-3 bg-gray-50 rounded-md">
+                <p className="text-xs font-medium text-gray-500 mb-1">Body Layer</p>
+                <p className="text-sm font-bold">A2 Body</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-md">
+                <p className="text-xs font-medium text-gray-500 mb-1">Enamel Layer</p>
+                <p className="text-sm font-bold">Translucent Neutral</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-md">
+                <p className="text-xs font-medium text-gray-500 mb-1">Intensity</p>
+                <p className="text-sm font-bold">White (Incisal Edge)</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-md">
+                <p className="text-xs font-medium text-gray-500 mb-1">Base Layer</p>
+                <p className="text-sm font-bold">A2 Opaque</p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">*Based on universal layering technique</p>
+          </div>
+        </div>
+      ) : activeTab === 'technical' ? (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4">
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Pixel Color Data</h4>
+            <div className="flex items-center mb-3">
+              <div className="w-8 h-8 rounded-md mr-3 bg-yellow-200 border border-gray-300"></div>
+              <div>
+                <p className="text-xs font-medium">Closest Match: A2 (92%)</p>
+              </div>
+            </div>
+            
+            {/* HSV Values */}
+            <div className="mb-4">
+              <p className="text-xs font-medium mb-1">HSV Values</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">Hue</p>
+                  <p className="text-sm font-bold">42°</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">Saturation</p>
+                  <p className="text-sm font-bold">28%</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">Value</p>
+                  <p className="text-sm font-bold">92%</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Lab Values */}
+            <div className="mb-4">
+              <p className="text-xs font-medium mb-1">Lab Values</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">L*</p>
+                  <p className="text-sm font-bold">78.5</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">a*</p>
+                  <p className="text-sm font-bold">2.3</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">b*</p>
+                  <p className="text-sm font-bold">18.7</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* RGB Values */}
+            <div>
+              <p className="text-xs font-medium mb-1">RGB Values</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">R</p>
+                  <p className="text-sm font-bold">235</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">G</p>
+                  <p className="text-sm font-bold">221</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <p className="text-xs text-gray-500">B</p>
+                  <p className="text-sm font-bold">185</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+            className="w-full flex items-center justify-center py-2 border-t border-gray-100 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            {isDetailsExpanded ? 'Show Less' : 'More Details'}
+            <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${isDetailsExpanded ? 'transform rotate-180' : ''}`} />
+          </button>
+          
+          {isDetailsExpanded && (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Distance from Standard Shades</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-sm bg-yellow-200 mr-2"></div>
+                    <span>A2</span>
+                  </div>
+                  <div className="w-1/2 bg-gray-200 rounded-full h-1.5">
+                    <div className="bg-blue-600 h-1.5 rounded-full" style={{width: '8%'}}></div>
+                  </div>
+                  <span className="font-medium">8%</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-sm bg-yellow-100 mr-2"></div>
+                    <span>A1</span>
+                  </div>
+                  <div className="w-1/2 bg-gray-200 rounded-full h-1.5">
+                    <div className="bg-blue-600 h-1.5 rounded-full" style={{width: '15%'}}></div>
+                  </div>
+                  <span className="font-medium">15%</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-sm bg-yellow-300 mr-2"></div>
+                    <span>B2</span>
+                  </div>
+                  <div className="w-1/2 bg-gray-200 rounded-full h-1.5">
+                    <div className="bg-blue-600 h-1.5 rounded-full" style={{width: '22%'}}></div>
+                  </div>
+                  <span className="font-medium">22%</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4">
+          {/* AI Tab Content - Using the actual AI Features panel from AIFeaturesPanel component */}
+          <div className="bg-gradient-to-r from-blue-50 to-blue-50 rounded-md">
+            {/* ALL AI Toggle */}
+            <div className="py-2 flex justify-between items-center border-b border-blue-100">
+              <div>
+                <span className="font-semibold text-gray-700">ALL AI</span>
+                <span className="text-sm text-gray-500 ml-2">Controls all implemented features</span>
+              </div>
+              <Switch 
+                id="all-ai" 
+                className="data-[state=checked]:bg-blue-600" 
+                checked={aiEnabled}
+                onCheckedChange={() => setAiEnabled(!aiEnabled)}
+              />
+            </div>
+            
+            {/* HSV Color Space */}
+            <div className="py-3 flex justify-between items-center border-b border-blue-100">
+              <div className="flex-1">
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700">HSV Color Space</span>
+                  <button className="inline-flex">
+                    <Info className="w-4 h-4 ml-2 text-blue-500 cursor-pointer hover:text-blue-700" />
+                  </button>
+                  <div className={`ml-3 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${aiEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                    {aiEnabled ? 'Active' : 'Inactive'}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Enhanced shade matching using hue, saturation, and value color space
+                </p>
+              </div>
+              <Switch 
+                id="hsv-toggle"
+                className="data-[state=checked]:bg-blue-600"
+                checked={aiEnabled}
+                disabled={!aiEnabled}
+                onCheckedChange={() => {}}
+              />
+            </div>
+            
+            {/* Exposure Masking Feature */}
+            <div className="py-3 flex justify-between items-center border-b border-blue-100">
+              <div className="flex-1">
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700">Exposure Masking</span>
+                  <div className={`ml-3 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${aiEnabled ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                    {aiEnabled ? 'Active' : 'Inactive'}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Exclude over- and underexposed pixels from color analysis
+                </p>
+              </div>
+              <Switch 
+                className="data-[state=checked]:bg-blue-600"
+                checked={aiEnabled}
+                disabled={!aiEnabled}
+                onCheckedChange={() => {}}
+              />
+            </div>
+            
+            {/* Exposure Mask Intensity Slider - Only shown when masking is enabled */}
+            {aiEnabled && (
+              <div className="py-3 pl-4 pr-2 flex flex-col border-b border-blue-100 bg-blue-50 rounded-md mt-1 mb-2">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Mask Intensity
+                  </label>
+                  <span className="text-sm font-medium text-blue-700">
+                    50%
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-500">10%</span>
+                  <Slider
+                    value={[50]}
+                    min={10}
+                    max={100}
+                    step={2}
+                    className="flex-1"
+                    onValueChange={() => {}}
+                  />
+                  <span className="text-xs text-gray-500">100%</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Adjusts how aggressively masking is applied to over/underexposed areas
+                </p>
+              </div>
+            )}
+    
+            {/* Circle Size Controls */}
+            <div className="py-3 flex flex-col border-b border-blue-100">
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <span className="font-medium text-gray-700">Calibration Circle Size</span>
+                </div>
+                <span className="text-xs font-medium text-gray-600 bg-blue-50 px-2 py-1 rounded">
+                  100%
+                </span>
+              </div>
+              <Slider
+                value={[100]}
+                max={500}
+                min={20}
+                step={5}
+                onValueChange={() => {}}
+                className="my-1"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Adjust the size of calibration sampling circles (20% to 500%)
+              </p>
+            </div>
+    
+            {/* Analysis Circle Size Control */}
+            <div className="py-3 flex flex-col">
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <span className="font-medium text-gray-700">Analysis Circle Size</span>
+                </div>
+                <span className="text-xs font-medium text-gray-600 bg-blue-50 px-2 py-1 rounded">
+                  100%
+                </span>
+              </div>
+              <Slider
+                value={[100]}
+                max={500}
+                min={20}
+                step={5}
+                onValueChange={() => {}}
+                className="my-1"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Adjust the size of the analysis sampling circle (20% to 500%)
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-500">Exposure Masking</span>
+          <div className="w-10 h-6 bg-gray-200 rounded-full relative">
+            <div className="w-4 h-4 bg-white rounded-full absolute top-1 left-1 shadow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ResultsPhase: React.FC = () => (
+  <div className="p-6">
+    <h3 className="text-lg font-medium text-gray-900 mb-4">Results</h3>
+    <div className="border border-gray-200 rounded-lg p-4 mb-4">
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Case Name</label>
+        <input type="text" className="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Case #123" />
+      </div>
+      <div className="aspect-video bg-gray-100 rounded-md mb-4 flex items-center justify-center">
+        <p className="text-gray-500">Results Preview</p>
+      </div>
+      <div className="p-4 bg-gray-50 rounded-md">
+        <p className="text-sm font-medium mb-2">Shade Match Results</p>
+        <div className="flex items-center space-x-2 mb-2">
+          <div className="w-6 h-6 bg-yellow-200 rounded-sm"></div>
+          <p className="font-medium">A2 (92% match)</p>
+        </div>
+        <p className="text-xs text-gray-500">Secondary matches: A1 (85%), B2 (78%)</p>
+      </div>
+    </div>
+  </div>
+);
+
+export const PhaseManager: React.FC = () => {
+  const { state, goToNextPhase, goToPreviousPhase, resetWorkflow } = useWorkflow();
+
+  // Phase component rendering based on current phase
+  const renderPhaseContent = () => {
+    switch (state.currentPhase) {
+      case 'upload':
+        return <UploadPhase />;
+      case 'calibration':
+        return <CalibrationPhase />;
+      case 'analysis':
+        return <AnalysisPhase />;
+      case 'results':
+        return <ResultsPhase />;
+      default:
+        return null;
+    }
+  };
+  
+  // Function to determine if back button should be shown
+  const showBackButton = () => {
+    return state.currentPhase !== 'upload' && state.canGoBack;
+  };
+  
+  // Function to determine if next button should be shown
+  const showNextButton = () => {
+    return state.currentPhase !== 'results' && state.canProceed;
+  };
+
+  return (
+    <div className="w-full max-w-lg mx-auto h-full flex flex-col bg-white shadow-md rounded-lg overflow-hidden">
+      {/* App title and reset button - always visible */}
+      <div className="flex items-center justify-between py-4 px-6 border-b">
+        <h1 className="text-xl font-semibold text-gray-900">ToothShade Vision</h1>
+        {state.currentPhase !== 'upload' && (
+          <button 
+            onClick={resetWorkflow}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors" 
+            aria-label="Reset workflow"
+          >
+            <RotateCcw className="w-5 h-5 text-gray-700" />
+          </button>
+        )}
+      </div>
+
+      {/* Stepper - Only shown after upload */}
+      {state.currentPhase !== 'upload' && (
+        <div className="px-6 pt-4">
+          <WorkflowStepper currentPhase={state.currentPhase} />
+        </div>
+      )}
+
+      {/* Main content area - Single window for all phases */}
+      <div className="flex-1 overflow-y-auto">
+        {/* No Suspense needed since we're using direct components */}
+        <div className="transition-all duration-300 transform">
+          {renderPhaseContent()}
+        </div>
+      </div>
+
+      {/* Navigation controls - fixed at bottom */}
+      <div className="border-t py-4 px-6 flex justify-between bg-white">
+        {showBackButton() ? (
+          <button
+            onClick={goToPreviousPhase}
+            className="flex items-center px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back
+          </button>
+        ) : (
+          <div></div> /* Empty div to maintain flex spacing */
+        )}
+        
+        {showNextButton() ? (
+          <button
+            onClick={goToNextPhase}
+            disabled={!state.canProceed}
+            className={`
+              flex items-center px-4 py-2 rounded-md transition-colors
+              ${!state.canProceed
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-800 hover:bg-gray-700 text-white'}
+            `}
+          >
+            Next <ArrowRight className="w-4 h-4 ml-1" />
+          </button>
+        ) : state.currentPhase === 'results' ? (
+          <button
+            onClick={resetWorkflow}
+            className="flex items-center px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-900 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4 mr-1" /> Start New
+          </button>
+        ) : (
+          <div></div> /* Empty div to maintain flex spacing */
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Placeholder loading component
+const PhaseLoading = () => (
+  <div className="w-full h-40 flex items-center justify-center">
+    <div className="text-center">
+      <div className="w-8 h-8 border-4 border-t-gray-800 border-b-gray-300 border-l-gray-300 border-r-gray-300 rounded-full animate-spin mx-auto"></div>
+      <p className="mt-2 text-sm text-gray-500">Loading...</p>
+    </div>
+  </div>
+);

@@ -1,0 +1,14 @@
+<svg width="1000" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="500" fill="#f5f5f5"/>
+  <text x="70" y="200" font-family="Arial" font-size="150" font-weight="bold" font-style="italic" fill="#000000">ToothShade</text>
+  <text x="70" y="300" font-family="Arial" font-size="60" fill="#000000">Dental AI shade matching tool</text>
+  <g transform="translate(850, 330) scale(0.6)">
+    <path d="M60,20 L90,20 L90,50 C90,65 80,75 65,75 L35,75 C20,75 10,65 10,50 L10,20 L40,20 L40,50 C40,55 45,60 50,60 C55,60 60,55 60,50 L60,20 Z" fill="#000000"/>
+    <rect x="70" y="35" width="50" height="35" rx="5" fill="#000000"/>
+    <text x="80" y="60" font-family="Arial" font-size="24" fill="#ffffff" font-weight="bold">AI</text>
+    <path d="M75,10 L100,10 L105,15 L105,30 L75,30 Z" fill="#000000"/>
+    <circle cx="90" cy="20" r="2" fill="#ffffff"/>
+    <path d="M50,10 l5,-5 l5,5" stroke="#000000" stroke-width="2" fill="none"/>
+    <path d="M70,10 l5,-5 l5,5" stroke="#000000" stroke-width="2" fill="none"/>
+  </g>
+</svg>

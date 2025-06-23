@@ -1,0 +1,27 @@
+<svg width="664" height="664" xmlns="http://www.w3.org/2000/svg">
+  <rect width="664" height="664" fill="#f5f5f5"/>
+  <g>
+    <!-- ToothShade Text -->
+    <text x="70" y="390" font-family="Arial, sans-serif" font-size="140" font-weight="bold" font-style="italic" fill="black">ToothShade</text>
+    
+    <!-- Subtitle Text -->
+    <text x="70" y="490" font-family="Arial, sans-serif" font-size="60" fill="black">Dental AI shade matching tool</text>
+    
+    <!-- Tooth Icon and Magic Wand -->
+    <g transform="translate(580, 490) scale(0.8)">
+      <!-- Tooth -->
+      <path d="M80,50 C80,30 60,0 40,0 C20,0 0,30 0,50 C0,80 10,120 20,120 C25,120 30,100 40,100 C50,100 55,120 60,120 C70,120 80,80 80,50z" fill="black"/>
+      
+      <!-- Magic Wand -->
+      <line x1="20" y1="60" x2="70" y2="0" stroke="black" stroke-width="8"/>
+      
+      <!-- Sparkles -->
+      <circle cx="65" cy="5" r="3" fill="black"/>
+      <circle cx="75" cy="15" r="2" fill="black"/>
+      
+      <!-- AI Label -->
+      <rect x="90" y="50" width="45" height="40" rx="5" fill="black"/>
+      <text x="98" y="78" font-family="Arial, sans-serif" font-size="24" fill="white" font-weight="bold">AI</text>
+    </g>
+  </g>
+</svg>
