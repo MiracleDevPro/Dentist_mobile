@@ -37,6 +37,7 @@ const ResultsPhase: React.FC = () => {
           <div className="flex flex-col space-y-2">
             <Label htmlFor="case-name">Case Name / Patient ID</Label>
             <Input
+              className="placeholder-gray-700"
               id="case-name"
               value={caseName}
               onChange={(e) => setCaseName(e.target.value)}

@@ -73,7 +73,7 @@ const initialAnalysisState: AnalysisState = {
 };
 
 const initialState: WorkflowState = {
-  currentPhase: 'calibration',
+  currentPhase: 'upload', // <-- Set to 'upload' to start at the upload step
   calibrationData: initialCalibrationState,
   analysisData: initialAnalysisState,
   canGoBack: false,

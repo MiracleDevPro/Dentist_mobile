@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { WorkflowStepper } from './WorkflowStepper';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { DeviceMobile, Share, List, CopySimple } from 'phosphor-react';
@@ -17,7 +17,10 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
 }) => {
   const { state } = useWorkflow();
   const { toast } = useToast();
-  
+
+  useEffect(() => { 
+  console.log("status", state.currentPhase); // <-- Add this line
+  },[])
   const getCompletedPhases = () => {
     const completed = [];
     if (state.uploadedImage) completed.push('upload');
