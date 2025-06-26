@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useFeatures } from '@/contexts/FeaturesContext';
 import { Switch } from '@/components/ui/switch';
@@ -11,8 +11,8 @@ import { cn } from '@/lib/utils';
 import ColorAnalysisCanvas from '@/components/ColorAnalysisCanvas';
 
 const AnalysisPhase: React.FC = () => {
-  const { state, updateAnalysisData, goToPreviousPhase } = useWorkflow();
-  const { features, toggleFeature } = useFeatures();
+  const { state, updateAnalysisData, goToPreviousPhase, goToNextPhase } = useWorkflow();
+  const { features, toggleFeature, updateCircleSizeSettings} = useFeatures();
   const [activeTab, setActiveTab] = useState('controls');
   const [analysisCircleSize, setAnalysisCircleSize] = useState(15);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -102,6 +102,8 @@ const AnalysisPhase: React.FC = () => {
   useEffect(() => {
     setSelectedImage(uploadedImageUrl);
   }, []);
+
+
   return (
     <div className="px-6 py-4 w-full max-w-4xl mx-auto bg-[#ecedef]">
       <p className="text-center text-sm text-gray-600 font-manrope font-extralight mb-3">Place The Circle in order to see the Shade</p>
@@ -167,7 +169,7 @@ const AnalysisPhase: React.FC = () => {
           <div className="px-4 py-2 relative z-0">
             <h3 className="text-lg text-black font-manrope font-light mb-3">Analysis Controls</h3>
             <div className="space-y-4">
-              {/* Analysis Circle Size */}
+              {/* Analysis Circle Size  */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="analysis-circle-size" className="text-base text-black font-manrope font-light">Analysis Circle Size</Label>
@@ -179,7 +181,11 @@ const AnalysisPhase: React.FC = () => {
                   min={5}
                   max={50}
                   step={1}
-                  onValueChange={(value) => setAnalysisCircleSize(value[0])}
+                  onValueChange={(value) => {
+                    setAnalysisCircleSize(value[0]); 
+                    const scale = value[0] / 10;
+                    updateCircleSizeSettings({ analysisCircleScale: scale });
+                  }}
                 />
               </div>
               
@@ -209,6 +215,15 @@ const AnalysisPhase: React.FC = () => {
             className="flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 transition-colors font-manrope font-light"
           >
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
+          </button>
+        </div>
+
+        <div className="mt-4 flex justify-start">
+          <button
+            onClick={goToNextPhase}
+            className="flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 transition-colors font-manrope font-light"
+          >
+            <ArrowRight className="w-4 h-4 mr-1" /> Next
           </button>
         </div>
       </TabContent>

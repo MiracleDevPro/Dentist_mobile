@@ -69,10 +69,9 @@ export const AnalysisControls: React.FC<AnalysisControlsProps> = ({
               min={5}
               max={50}
               step={1}
-              value={[circleSize]}
               onValueChange={handleCircleSizeChange}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-1" >
               Adjust circle size for analysis points
             </p>
           </div>
@@ -87,9 +86,9 @@ export const AnalysisControls: React.FC<AnalysisControlsProps> = ({
 
           {/* Back to Calibration Button */}
           <div className="pt-2">
-            <Button 
-              variant="outline" 
-              className="w-full flex items-center justify-center" 
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center"
               onClick={onBackToCalibration}
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Calibration
