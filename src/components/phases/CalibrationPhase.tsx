@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWorkflow } from '@/contexts/WorkflowContext';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ColorAnalysisCanvas from '@/components/ColorAnalysisCanvas';
@@ -13,25 +11,14 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { saveCaseLocally, ToothCase } from "@/utils/localCaseUtils";
 import { loadVitaShades } from "@/utils/shadeMatcher";
 import { toast } from "@/components/ui/use-toast";
 
 const CalibrationPhase: React.FC = () => {
   const { state, updateCalibrationData, goToNextPhase, goToPreviousPhase } = useWorkflow();
   const [isSkipDialogOpen, setIsSkipDialogOpen] = useState(false);
-  const [circleSize, setCircleSize] = useState(20);
-  const [exposureMask, setExposureMask] = useState({
-    enabled: true,
-    value: 0,
-  });
-  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
-  const [calibrationStarted, setCalibrationStarted] = useState(false);
 
   // For demonstration, you may want to track clicks and selected shade
-  const [clickCount, setClickCount] = useState(0);
-  const [selectedShade, setSelectedShade] = useState('');
-  const [referenceShade, setReferenceShade] = useState('');
   const [calibration, setCalibration] = useState<{
     meanClickedLab: { L: number; a: number; b: number };
     officialLab: { L: number; a: number; b: number };
@@ -48,22 +35,12 @@ const CalibrationPhase: React.FC = () => {
   }[]>([]);
   const [calibrationClickPositions, setCalibrationClickPositions] = useState<{ x: number; y: number }[]>([]);
   const uploadedImageUrl = state.uploadedImage ? URL.createObjectURL(state.uploadedImage) : null;
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleCalibrate = () => {
-    if (!calibrationStarted) {
-      setCalibrationStarted(true);
-      return;
-    }
-    updateCalibrationData({
-      isCompleted: true,
-      circles: [
-        { x: 100, y: 100, size: circleSize },
-        { x: 200, y: 150, size: circleSize },
-      ],
-      exposureMask,
-    });
-    goToNextPhase();
-  };
+  useEffect(() =>{
+    setSelectedImage(uploadedImageUrl);
+  }, [])
+
 
   const handleSkip = () => {
     setIsSkipDialogOpen(false);
@@ -91,18 +68,19 @@ const CalibrationPhase: React.FC = () => {
                   className={calibrationMode ? "bg-gray-200 text-gray-800 border border-gray-300" : "bg-gray-100 hover:bg-gray-300 text-gray-800 border border-gray-300 manrope-light"}
                 >
                   {calibrationMode ? "Cancel Calibration" : "Start Calibration"}
-                </Button>
-                {calibration && (
-                  <span className="text-sm text-slate-700">
-                    Calibration: Mean Clicked LAB L*{calibration.meanClickedLab.L.toFixed(1)}, a*{calibration.meanClickedLab.a.toFixed(1)}, b*{calibration.meanClickedLab.b.toFixed(1)} → Official Vita {calibration.shade} LAB L*{calibration.officialLab.L.toFixed(1)}, a*{calibration.officialLab.a.toFixed(1)}, b*{calibration.officialLab.b.toFixed(1)}
-                  </span>
-                )}    
+            </Button>
+            {calibration && (
+              <span className="text-sm text-slate-700">
+                Calibration: Mean Clicked LAB L*{calibration.meanClickedLab.L.toFixed(1)}, a*{calibration.meanClickedLab.a.toFixed(1)}, b*{calibration.meanClickedLab.b.toFixed(1)} → Official Vita {calibration.shade} LAB L*{calibration.officialLab.L.toFixed(1)}, a*{calibration.officialLab.a.toFixed(1)}, b*{calibration.officialLab.b.toFixed(1)}
+              </span>
+            )}        
           </div>    
-              
+
           {/* Calibration Section with side-by-side layout */}
-            {calibrationMode && (
+            {calibrationMode && selectedImage &&(
               <div className="mt-4 w-full flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6">
                 {/* Calibration Canvas Card */}
+
                 <Card className="w-full bg-gray-100 border border-gray-300 mb-4 md:mb-0">
                   <CardHeader className="pb-2 flex flex-row items-center justify-between font-manrope text-gray-900">
                     <CardTitle className="text-sm font-semibold font-manrope text-gray-900">Calibration Image</CardTitle>
@@ -111,8 +89,8 @@ const CalibrationPhase: React.FC = () => {
                     <div className="flex flex-col items-center">
                       <div className="relative w-full max-w-xs mx-auto">
                         <ColorAnalysisCanvas
-                          imageUrl={uploadedImageUrl}
-                          onPixelSelect={() => {}}
+                          imageUrl={selectedImage}
+                          onPixelSelect={()=>{}}
                           onCalibrationClick={async (x, y) => {
                             if (calibrationPoints.length < 5) {
                               setCalibrationClickPositions(prev => [...prev, { x, y }]);
@@ -192,7 +170,7 @@ const CalibrationPhase: React.FC = () => {
                                   
                                 }
                               };
-                              img.src = uploadedImageUrl;
+                              img.src = selectedImage;
                             }
                           }}
                           calibrationPoints={calibrationPoints}
@@ -286,7 +264,6 @@ const CalibrationPhase: React.FC = () => {
                                       shade: calibrationShade 
                                     });
                                     // Auto-set the reference shade to match the calibration shade
-                                    setReferenceShade(calibrationShade);
                                     // Calibration complete notification removed as per user request.
                                   } else {
                                     toast({
@@ -326,38 +303,6 @@ const CalibrationPhase: React.FC = () => {
                 </Card>
               </div>
           )}    
-      </div>
-
-      {/* Calibration Circle Size */}
-      <div className="bg-white rounded-xl shadow p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-medium">Calibration Circle Size</h4>
-          <span className="text-xs text-gray-600">{circleSize}px</span>
-        </div>
-        <Slider
-          value={[circleSize]}
-          min={5}
-          max={50}
-          step={1}
-          onValueChange={(value) => setCircleSize(value[0])}
-          className="w-full"
-        />
-      </div>
-
-      {/* Exposure Masking Controls */}
-      <div className="bg-white rounded-xl shadow p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <Label htmlFor="exposure-threshold" className="text-sm">Exposure Mask</Label>
-          <span className="text-xs text-gray-600">{exposureMask.value}%</span>
-        </div>
-        <Slider
-          id="exposure-threshold"
-          value={[exposureMask.value]}
-          min={0}
-          max={100}
-          step={1}
-          onValueChange={(value) => setExposureMask(prev => ({ ...prev, value: value[0] }))}
-        />
       </div>
 
       {/* Skip Dialog */}

@@ -108,7 +108,7 @@ const ColorAnalysisCanvas: React.FC<ColorAnalysisCanvasProps> = ({
   calibrationPoints,
   calibrationClickPositions,
   calibrationMode = false,
-  onCalibrationClick
+  onCalibrationClick,
 }) => {
   // State for tracking image loading
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);

@@ -2,20 +2,38 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useFeatures } from '@/contexts/FeaturesContext';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { TabSystem, TabContent } from '../TabSystem';
 import { Sliders, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ColorAnalysisCanvas from '@/components/ColorAnalysisCanvas';
 
 const AnalysisPhase: React.FC = () => {
   const { state, updateAnalysisData, goToPreviousPhase } = useWorkflow();
   const { features, toggleFeature } = useFeatures();
   const [activeTab, setActiveTab] = useState('controls');
   const [analysisCircleSize, setAnalysisCircleSize] = useState(15);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [calibration, setCalibration] = useState<{
+    meanClickedLab: { L: number; a: number; b: number };
+    officialLab: { L: number; a: number; b: number };
+    // Include HSV values for calibration when AI features are enabled
+    meanClickedHsv?: { h: number; s: number; v: number };
+    officialHsv?: { h: number; s: number; v: number };
+    shade: string;
+  } | null>(null);
+  const [calibrationMode, setCalibrationMode] = useState(false);
+  const [calibrationShade, setCalibrationShade] = useState<string>("");
+  const [selectedPixelData, setSelectedPixelData] = useState<any>(null);
+  const [calibrationPoints, setCalibrationPoints] = useState<{ 
+    L: number; a: number; b: number; 
+    hsv?: { h: number; s: number; v: number } 
+  }[]>([]);
+  const [calibrationClickPositions, setCalibrationClickPositions] = useState<{ x: number; y: number }[]>([]);
   // Initialize exposure mask from calibration settings if available
+
   const [exposureMask, setExposureMask] = useState({
     enabled: true,
     value: state.calibrationData?.exposureMask?.value || 50,
@@ -33,16 +51,6 @@ const AnalysisPhase: React.FC = () => {
       total: aiFeatures.length
     };
   }, [features.useHSV, features.useWeightedDeltaE, features.useClinicalSuggestions]);
-  
-  // Effect to initialize exposure mask from calibration data ONLY once on component mount
-  useEffect(() => {
-    if (state.calibrationData?.exposureMask) {
-      setExposureMask({
-        enabled: true, 
-        value: state.calibrationData.exposureMask.value
-      });
-    }
-  }, []);  // Empty dependency array means this only runs once on mount
 
   const handleExposureMaskingToggle = (checked: boolean) => {
     setExposureMask(prev => ({
@@ -75,30 +83,52 @@ const AnalysisPhase: React.FC = () => {
     });
   };
 
+  const handlePixelSelect = (pixelData: any) => {
+    setSelectedPixelData(pixelData);
+  };
+
+  const uploadedImageUrl = state.uploadedImage ? URL.createObjectURL(state.uploadedImage) : null;
+
+    // Effect to initialize exposure mask from calibration data ONLY once on component mount
+  useEffect(() => {
+    if (state.calibrationData?.exposureMask) {
+      setExposureMask({
+        enabled: true, 
+        value: state.calibrationData.exposureMask.value
+      });
+    }
+  }, []);  // Empty dependency array means this only runs once on mount
+
+  useEffect(() => {
+    setSelectedImage(uploadedImageUrl);
+  }, []);
   return (
     <div className="px-6 py-4 w-full max-w-4xl mx-auto bg-[#ecedef]">
       <p className="text-center text-sm text-gray-600 font-manrope font-extralight mb-3">Place The Circle in order to see the Shade</p>
       {/* This would be replaced with the actual analysis canvas */}
-      <div className="border border-dotted border-gray-500 rounded-lg p-0 cursor-pointer bg-transparent relative overflow-hidden">
-        {/* Content area */}
-        <div className="px-8 pt-8 pb-4 relative z-0">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="flex-1">
-              <h3 className="text-lg text-black font-manrope font-light mb-2">Analysis Canvas</h3>
-            </div>
-            
-            <div className="flex-1 flex justify-center items-center mt-6 md:mt-0">
-              <div className="w-40 h-40 flex flex-col items-center justify-center opacity-80">
-              </div>
+      {/* Main Analysis Canvas */}
+        {selectedImage ? (
+          <div className="relative w-full flex justify-center mb-10">      
+            <div className="relative" style={{ maxWidth: "100%", margin: '0 auto' }}>
+              <ColorAnalysisCanvas
+                imageUrl={selectedImage}
+                onPixelSelect={handlePixelSelect}
+                calibrationLab={calibration ? { clickedLab: calibration.meanClickedLab, officialLab: calibration.officialLab } : undefined}
+                calibration={calibration}
+                calibrationClickPositions={calibrationClickPositions}
+              />
+                {calibrationPoints.length > 5 && (
+                  <span className="text-xs text-red-700 mt-2 block">Maximum 5 calibration points allowed.</span>
+                )}
             </div>
           </div>
-        </div>
-        
-        {/* Overlay with the same style as upload phase */}
-        <div 
-          className="absolute inset-0 bg-[#ecedef] opacity-30 pointer-events-none z-10"
-        />
-      </div>
+          ) : (
+            <div className="flex items-center justify-center h-96 rounded-2xl border-2 border-gray-400 bg-[#ecedef]/80">
+              <div className="text-center">
+                <p className="text-slate-600 text-lg">Please upload an image in the panel above to begin analysis</p>
+              </div>
+            </div>
+        )}
       
       {/* Tab Navigation */}
       <div className="relative">
