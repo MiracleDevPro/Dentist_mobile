@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, PowerOff } from 'lucide-react';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { useFeatures } from '@/contexts/FeaturesContext';
 import { Switch } from '@/components/ui/switch';
@@ -105,35 +105,36 @@ const AnalysisPhase: React.FC = () => {
 
 
   return (
-    <div className="px-6 py-4 w-full max-w-4xl mx-auto bg-[#ecedef]">
-      <p className="text-center text-sm text-gray-600 font-manrope font-extralight mb-3">Place The Circle in order to see the Shade</p>
-      {/* This would be replaced with the actual analysis canvas */}
+    <div className="px-2 sm:px-4 py-4 w-full max-w-4xl mx-auto bg-[#ecedef] min-h-screen">
+      <p className="text-center text-sm text-gray-600 font-manrope font-extralight mb-10">Place The Circle in order to see the Shade</p>
       {/* Main Analysis Canvas */}
-        {selectedImage ? (
-          <div className="relative w-full flex justify-center mb-10">      
-            <div className="relative" style={{ maxWidth: "100%", margin: '0 auto' }}>
-              <ColorAnalysisCanvas
-                imageUrl={selectedImage}
-                onPixelSelect={handlePixelSelect}
-                calibrationLab={calibration ? { clickedLab: calibration.meanClickedLab, officialLab: calibration.officialLab } : undefined}
-                calibration={calibration}
-                calibrationClickPositions={calibrationClickPositions}
-              />
-                {calibrationPoints.length > 5 && (
-                  <span className="text-xs text-red-700 mt-2 block">Maximum 5 calibration points allowed.</span>
-                )}
-            </div>
+      {selectedImage ? (
+        <div className="relative w-full flex justify-center mb-8">
+          <div
+            className="relative w-full h-[40vh] min-h-[220px] sm:min-h-[320px] md:min-h-[400px] lg:min-h-[500px] max-w-full md:max-w-2xl lg:max-w-3xl flex items-center justify-center bg-white rounded-xl shadow-md border border-gray-200"
+            style={{ margin: '0 auto' }}
+          >
+            <ColorAnalysisCanvas
+              imageUrl={selectedImage}
+              onPixelSelect={handlePixelSelect}
+              calibrationLab={calibration ? { clickedLab: calibration.meanClickedLab, officialLab: calibration.officialLab } : undefined}
+              calibration={calibration}
+              calibrationClickPositions={calibrationClickPositions}
+            />
+            {calibrationPoints.length > 5 && (
+              <span className="text-xs text-red-700 mt-2 block">Maximum 5 calibration points allowed.</span>
+            )}
           </div>
-          ) : (
-            <div className="flex items-center justify-center h-96 rounded-2xl border-2 border-gray-400 bg-[#ecedef]/80">
-              <div className="text-center">
-                <p className="text-slate-600 text-lg">Please upload an image in the panel above to begin analysis</p>
-              </div>
-            </div>
-        )}
-      
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-72 rounded-2xl border-2 border-gray-400 bg-[#ecedef]/80">
+          <div className="text-center">
+            <p className="text-slate-600 text-lg">Please upload an image in the panel above to begin analysis</p>
+          </div>
+        </div>
+      )}
       {/* Tab Navigation */}
-      <div className="relative">
+      <div className="relative mb-2">
         <TabSystem
           tabs={[
             { id: 'controls', label: 'Controls', icon: <Sliders className="w-[18px] h-[18px]" /> },
@@ -150,7 +151,9 @@ const AnalysisPhase: React.FC = () => {
                 >
                   {featureCount.active > 0 
                     ? `Active ${featureCount.active}/${featureCount.total}` 
-                    : "Not Active"}
+                    : <span className="flex items-center gap-1">
+                        <PowerOff className="w-3 h-3" />
+                      </span>}
                 </div>
               )
             },
@@ -159,78 +162,57 @@ const AnalysisPhase: React.FC = () => {
           ]}
           defaultTab="controls"
           onChange={setActiveTab}
-          className="mb-3"
+          className="mb-2"
         />
       </div>
-      
       {/* Tab Contents */}
-      <TabContent active={activeTab === 'controls'}>
-        <div className="mt-4 mb-2 bg-transparent relative">
-          <div className="px-4 py-2 relative z-0">
-            <h3 className="text-lg text-black font-manrope font-light mb-3">Analysis Controls</h3>
-            <div className="space-y-4">
+      <div className="w-full">
+        <TabContent active={activeTab === 'controls'}>
+          <div className="mt-2 mb-2 bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 relative">
+            <h3 className="text-lg text-black font-manrope font-light mb-4">Analysis Controls</h3>
+            <div className="space-y-6">
               {/* Analysis Circle Size  */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="analysis-circle-size" className="text-base text-black font-manrope font-light">Analysis Circle Size</Label>
-                  <span className="text-sm text-black font-manrope font-extralight">{analysisCircleSize}px</span>
+                <Label htmlFor="analysis-circle-size" className="text-base text-black font-manrope font-medium block mb-1">Analysis Circle Size</Label>
+                <div className="flex items-center gap-3">
+                  <Slider
+                    id="analysis-circle-size"
+                    value={[analysisCircleSize]}
+                    min={5}
+                    max={50}
+                    step={1}
+                    onValueChange={(value) => {
+                      setAnalysisCircleSize(value[0]); 
+                      const scale = value[0] / 10;
+                      updateCircleSizeSettings({ analysisCircleScale: scale });
+                    }}
+                    className="flex-1"
+                  />
+                  <span className="text-sm text-black font-manrope font-semibold min-w-[36px] text-right">{analysisCircleSize}px</span>
                 </div>
-                <Slider
-                  id="analysis-circle-size"
-                  value={[analysisCircleSize]}
-                  min={5}
-                  max={50}
-                  step={1}
-                  onValueChange={(value) => {
-                    setAnalysisCircleSize(value[0]); 
-                    const scale = value[0] / 10;
-                    updateCircleSizeSettings({ analysisCircleScale: scale });
-                  }}
-                />
               </div>
-              
               {/* Analysis Exposure Masking */}
-              <div className="space-y-2 pt-2">
-                <div className="flex items-center justify-between mb-1">
-                  <Label htmlFor="analysis-exposure-threshold" className="text-base text-black font-manrope font-light">Exposure Mask: Hides over/underexposed areas</Label>
-                  <span className="text-sm text-black font-manrope font-extralight">{exposureMask.value}%</span>
+              <div className="space-y-2">
+                <Label htmlFor="analysis-exposure-threshold" className="text-base text-black font-manrope font-medium block mb-1">Exposure Mask: Hides over/underexposed areas</Label>
+                <div className="flex items-center gap-3">
+                  <Slider
+                    id="analysis-exposure-threshold"
+                    value={[exposureMask.value]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onValueChange={handleExposureMaskingValue}
+                    className="flex-1"
+                  />
+                  <span className="text-sm text-black font-manrope font-semibold min-w-[36px] text-right">{exposureMask.value}%</span>
                 </div>
-                <Slider
-                  id="analysis-exposure-threshold"
-                  value={[exposureMask.value]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={handleExposureMaskingValue}
-                />
               </div>
             </div>
+            <div className="absolute inset-0 bg-[#ecedef] opacity-10 pointer-events-none z-10 rounded-xl"></div>
           </div>
-          <div className="absolute inset-0 bg-[#ecedef] opacity-30 pointer-events-none z-10"></div>
-        </div>
-        
-        <div className="mt-4 flex justify-start">
-          <button
-            onClick={goToPreviousPhase}
-            className="flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 transition-colors font-manrope font-light"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back
-          </button>
-        </div>
-
-        <div className="mt-4 flex justify-start">
-          <button
-            onClick={goToNextPhase}
-            className="flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 transition-colors font-manrope font-light"
-          >
-            <ArrowRight className="w-4 h-4 mr-1" /> Next
-          </button>
-        </div>
-      </TabContent>
-      
-      <TabContent active={activeTab === 'ai-features'}>
-        <div className="border border-dotted border-gray-500 rounded-lg mt-4 mb-2 bg-transparent relative overflow-hidden">
-          <div className="px-6 py-4 relative z-0">
+        </TabContent>
+        <TabContent active={activeTab === 'ai-features'}>
+          <div className="border border-gray-200 rounded-xl mt-2 mb-2 bg-white shadow-md p-4 sm:p-6 relative overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg text-black font-manrope font-light">AI Features</h3>
               <div className="flex items-center">
@@ -242,11 +224,11 @@ const AnalysisPhase: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {/* HSV Color Space */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex flex-col">
-                  <Label htmlFor="hsv-toggle" className="mb-1 text-black">
+                  <Label htmlFor="hsv-toggle" className="mb-1 text-black font-medium">
                     HSV Color Space
                   </Label>
                   <span className="text-xs text-black">
@@ -259,13 +241,10 @@ const AnalysisPhase: React.FC = () => {
                   onCheckedChange={() => toggleFeature('useHSV')}
                 />
               </div>
-              
-              {/* Exposure Masking toggle removed - already handled in analysis controls */}
-              
               {/* Weighted Delta-E */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex flex-col">
-                  <Label htmlFor="delta-e-toggle" className="mb-1 text-black">
+                  <Label htmlFor="delta-e-toggle" className="mb-1 text-black font-medium">
                     Weighted Delta-E
                   </Label>
                   <span className="text-xs text-black">
@@ -278,11 +257,10 @@ const AnalysisPhase: React.FC = () => {
                   onCheckedChange={() => toggleFeature('useWeightedDeltaE')}
                 />
               </div>
-              
               {/* Clinical Layering */}
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <Label htmlFor="clinical-toggle" className="mb-1 text-black">
+                  <Label htmlFor="clinical-toggle" className="mb-1 text-black font-medium">
                     Clinical Layering Suggestions
                   </Label>
                   <span className="text-xs text-black">
@@ -296,17 +274,14 @@ const AnalysisPhase: React.FC = () => {
                 />
               </div>
             </div>
+            <div className="absolute inset-0 bg-[#ecedef] opacity-10 pointer-events-none z-10 rounded-xl"></div>
           </div>
-          <div className="absolute inset-0 bg-[#ecedef] opacity-30 pointer-events-none z-10"></div>
-        </div>
-      </TabContent>
-      
-      <TabContent active={activeTab === 'analysis'}>
-        <div className="border border-dotted border-gray-500 rounded-lg mt-4 mb-2 bg-transparent relative overflow-hidden">
-          <div className="px-6 py-4 relative z-0">
-            <h3 className="text-lg text-black font-manrope font-light mb-3">Detailed Analysis</h3>
+        </TabContent>
+        <TabContent active={activeTab === 'analysis'}>
+          <div className="border border-gray-200 rounded-xl mt-2 mb-2 bg-white shadow-md p-4 sm:p-6 relative overflow-hidden">
+            <h3 className="text-lg text-black font-manrope font-light mb-4">Detailed Analysis</h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-xs text-gray-500 mb-1">LAB Values</h3>
                   <div className="space-y-1">
@@ -324,10 +299,9 @@ const AnalysisPhase: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
               <div className="pt-2">
                 <h3 className="text-xs text-gray-500 mb-1">Closest VITA Shades</h3>
-                <div className="grid grid-cols-3 gap-2 text-sm">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
                   <div className="bg-amber-50 border border-amber-100 rounded p-2 text-center">
                     <p className="font-medium">A2</p>
                     <p className="text-xs text-gray-500">ΔE: 2.3</p>
@@ -343,15 +317,12 @@ const AnalysisPhase: React.FC = () => {
                 </div>
               </div>
             </div>
+            <div className="absolute inset-0 bg-[#ecedef] opacity-10 pointer-events-none z-10 rounded-xl"></div>
           </div>
-          <div className="absolute inset-0 bg-[#ecedef] opacity-30 pointer-events-none z-10"></div>
-        </div>
-      </TabContent>
-      
-      <TabContent active={activeTab === 'suggestions'}>
-        <div className="border border-dotted border-gray-500 rounded-lg mt-4 mb-2 bg-transparent relative overflow-hidden">
-          <div className="px-6 py-4 relative z-0">
-            <h3 className="text-lg text-black font-manrope font-light mb-3">Clinical Suggestions</h3>
+        </TabContent>
+        <TabContent active={activeTab === 'suggestions'}>
+          <div className="border border-gray-200 rounded-xl mt-2 mb-2 bg-white shadow-md p-4 sm:p-6 relative overflow-hidden">
+            <h3 className="text-lg text-black font-manrope font-light mb-4">Clinical Suggestions</h3>
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-100 rounded-lg p-3">
                 <h3 className="text-black font-medium mb-2">Recommended Approach</h3>
@@ -359,7 +330,6 @@ const AnalysisPhase: React.FC = () => {
                   For this A2 shade, consider a two-layer approach with a dentin core and enamel overlay.
                 </p>
               </div>
-              
               <div>
                 <h3 className="text-sm font-medium text-black mb-2">Layering Technique</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-black">
@@ -368,7 +338,6 @@ const AnalysisPhase: React.FC = () => {
                   <li>Enamel: Translucent Enamel (20% thickness)</li>
                 </ul>
               </div>
-              
               <div className="pt-2">
                 <h3 className="text-sm font-medium text-black mb-2">Alternative Options</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-black">
@@ -377,10 +346,25 @@ const AnalysisPhase: React.FC = () => {
                 </ul>
               </div>
             </div>
+            <div className="absolute inset-0 bg-[#ecedef] opacity-10 pointer-events-none z-10 rounded-xl"></div>
           </div>
-          <div className="absolute inset-0 bg-[#ecedef] opacity-30 pointer-events-none z-10"></div>
-        </div>
-      </TabContent>
+        </TabContent>
+      </div>
+      {/* Navigation Buttons - Outside Tab Panel */}
+      <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <button
+          onClick={goToPreviousPhase}
+          className="flex items-center w-full sm:w-auto justify-center px-6 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 transition-all duration-200 font-manrope font-medium shadow-sm hover:shadow-md"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back
+        </button>
+        <button
+          onClick={goToNextPhase}
+          className="flex items-center w-full sm:w-auto justify-center px-6 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 transition-all duration-200 font-manrope font-medium shadow-sm hover:shadow-md"
+        >
+          Next <ArrowRight className="w-4 h-4 ml-2" />
+        </button>
+      </div>
     </div>
   );
 };

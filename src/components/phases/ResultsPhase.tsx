@@ -31,13 +31,13 @@ const ResultsPhase: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <MobileCard title="Case Summary">
-        <div className="space-y-4">
+    <div className="space-y-6 px-2 sm:px-4 py-4 w-full max-w-2xl mx-auto min-h-screen">
+      <MobileCard title="Case Summary" className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
+        <div className="space-y-5">
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="case-name">Case Name / Patient ID</Label>
+            <Label htmlFor="case-name" className="font-medium text-gray-800">Case Name / Patient ID</Label>
             <Input
-              className="placeholder-gray-700"
+              className="placeholder:text-gray-500 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-200 focus:border-blue-400 text-base"
               id="case-name"
               value={caseName}
               onChange={(e) => setCaseName(e.target.value)}
@@ -46,19 +46,20 @@ const ResultsPhase: React.FC = () => {
           </div>
 
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="case-notes">Clinical Notes</Label>
+            <Label htmlFor="case-notes" className="font-medium text-gray-800">Clinical Notes</Label>
             <Textarea
               id="case-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any clinical notes or observations"
               rows={3}
+              className="placeholder:text-gray-500 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-200 focus:border-blue-400 text-base"
             />
           </div>
 
           {/* Results Preview */}
-          <div className="bg-gray-200 rounded-lg h-40 flex items-center justify-center">
-            <p className="text-gray-500">Results Preview Placeholder</p>
+          <div className="bg-white border border-gray-200 rounded-xl h-40 flex items-center justify-center shadow-sm">
+            <p className="text-gray-400">Results Preview Placeholder</p>
           </div>
         </div>
       </MobileCard>
@@ -77,56 +78,56 @@ const ResultsPhase: React.FC = () => {
 
       {/* Tab Contents */}
       <TabContent active={activeTab === 'summary'}>
-        <MobileCard title="Analysis Summary">
-          <div className="space-y-4">
+        <MobileCard title="Analysis Summary" className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
+          <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h3 className="text-sm font-medium">Primary Shade</h3>
-                <div className="bg-amber-50 border border-amber-100 rounded p-3 mt-1 flex justify-between items-center">
-                  <span className="font-medium text-xl">A2</span>
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">92% Match</span>
+                <h3 className="text-sm font-semibold text-gray-700">Primary Shade</h3>
+                <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mt-1 flex justify-between items-center">
+                  <span className="font-semibold text-xl text-gray-800">A2</span>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">92% Match</span>
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-medium">Secondary Shade</h3>
-                <div className="bg-gray-50 border border-gray-200 rounded p-3 mt-1 flex justify-between items-center">
-                  <span className="font-medium text-xl">B2</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">84% Match</span>
+                <h3 className="text-sm font-semibold text-gray-700">Secondary Shade</h3>
+                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 mt-1 flex justify-between items-center">
+                  <span className="font-semibold text-xl text-gray-800">B2</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium">84% Match</span>
                 </div>
               </div>
             </div>
 
             <div className="pt-2">
-              <h3 className="text-sm font-medium mb-2">LAB Values</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">LAB Values</h3>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 border border-gray-200 rounded p-2">
                   <span className="text-xs text-gray-500">L</span>
-                  <p className="font-medium">76.5</p>
+                  <p className="font-semibold text-gray-800">76.5</p>
                 </div>
                 <div className="bg-gray-50 border border-gray-200 rounded p-2">
                   <span className="text-xs text-gray-500">a</span>
-                  <p className="font-medium">1.2</p>
+                  <p className="font-semibold text-gray-800">1.2</p>
                 </div>
                 <div className="bg-gray-50 border border-gray-200 rounded p-2">
                   <span className="text-xs text-gray-500">b</span>
-                  <p className="font-medium">18.7</p>
+                  <p className="font-semibold text-gray-800">18.7</p>
                 </div>
               </div>
             </div>
 
             <div className="pt-2">
-              <h3 className="text-sm font-medium mb-2">Analysis Points</h3>
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Analysis Points</h3>
+              <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-left">#</th>
-                      <th className="px-3 py-2 text-left">Shade</th>
-                      <th className="px-3 py-2 text-left">ΔE</th>
-                      <th className="px-3 py-2 text-left">Confidence</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-600">#</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-600">Shade</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-600">ΔE</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-600">Confidence</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-100">
                     <tr>
                       <td className="px-3 py-2">1</td>
                       <td className="px-3 py-2">A2</td>
@@ -148,18 +149,18 @@ const ResultsPhase: React.FC = () => {
       </TabContent>
 
       <TabContent active={activeTab === 'clinical'}>
-        <MobileCard title="Clinical Recommendations">
-          <div className="space-y-4">
+        <MobileCard title="Clinical Recommendations" className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
+          <div className="space-y-5">
             <div className="bg-green-50 border border-green-100 rounded-lg p-3">
-              <h3 className="text-green-800 font-medium mb-2">Shade Family: A Group</h3>
+              <h3 className="text-green-800 font-semibold mb-2">Shade Family: A Group</h3>
               <p className="text-sm text-gray-700">
                 Shade A2 indicates a slightly yellowish-reddish hue of medium value and medium-low chroma.
               </p>
             </div>
 
             <div>
-              <h3 className="text-sm font-medium mb-2">Layering Technique</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Layering Technique</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
                 <li>Base: A2 Dentin (80% thickness)</li>
                 <li>Body: A1 Body (40% thickness)</li>
                 <li>Enamel: Translucent Enamel (20% thickness)</li>
@@ -167,8 +168,8 @@ const ResultsPhase: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-sm font-medium mb-2">Material Selection</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Material Selection</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
                 <li>Composite: A2B + A2E with incisal translucency</li>
                 <li>Ceramic: A2 with slight translucency gradient</li>
               </ul>
@@ -178,38 +179,38 @@ const ResultsPhase: React.FC = () => {
       </TabContent>
 
       <TabContent active={activeTab === 'share'}>
-        <MobileCard title="Share & Export Options">
+        <MobileCard title="Share & Export Options" className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                className="flex flex-col items-center justify-center h-24 space-y-2"
+                className="flex flex-col items-center justify-center h-24 space-y-2 border-blue-100 hover:bg-blue-50 transition"
                 onClick={handleShareLink}
               >
-                <Share2 className="h-6 w-6" />
-                <span className="text-sm">Copy Share Link</span>
+                <Share2 className="h-6 w-6 text-blue-500" />
+                <span className="text-sm text-blue-700">Copy Share Link</span>
               </Button>
               <Button
                 variant="outline" 
-                className="flex flex-col items-center justify-center h-24 space-y-2"
+                className="flex flex-col items-center justify-center h-24 space-y-2 border-gray-200 hover:bg-blue-50 transition"
                 onClick={handleSaveImage}
               >
-                <FileDown className="h-6 w-6" />
-                <span className="text-sm">Save Image</span>
+                <FileDown className="h-6 w-6 text-blue-500" />
+                <span className="text-sm text-gray-700">Save Image</span>
               </Button>
               <Button
                 variant="outline"
-                className="flex flex-col items-center justify-center h-24 space-y-2"
+                className="flex flex-col items-center justify-center h-24 space-y-2 border-gray-200 hover:bg-blue-50 transition"
               >
-                <Printer className="h-6 w-6" />
-                <span className="text-sm">Print Report</span>
+                <Printer className="h-6 w-6 text-blue-500" />
+                <span className="text-sm text-gray-700">Print Report</span>
               </Button>
               <Button
                 variant="outline"
-                className="flex flex-col items-center justify-center h-24 space-y-2"
+                className="flex flex-col items-center justify-center h-24 space-y-2 border-gray-200 hover:bg-blue-50 transition"
               >
-                <Copy className="h-6 w-6" />
-                <span className="text-sm">Copy Results</span>
+                <Copy className="h-6 w-6 text-blue-500" />
+                <span className="text-sm text-gray-700">Copy Results</span>
               </Button>
             </div>
           </div>
@@ -221,7 +222,7 @@ const ResultsPhase: React.FC = () => {
         <Button 
           variant="outline" 
           onClick={resetWorkflow}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-blue-600 border-blue-200 hover:bg-blue-50"
         >
           New Analysis
         </Button>
@@ -229,7 +230,7 @@ const ResultsPhase: React.FC = () => {
         <Button 
           onClick={handleSaveCase}
           disabled={!caseName}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
         >
           <Save className="w-4 h-4" />
           Save Case
