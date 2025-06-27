@@ -44,7 +44,7 @@ const ResultsPhase: React.FC = () => {
     const phoneNumber_client = '358505151330';
     const phoneNumber_me = '12145518680'; // Example India number
     const message = encodeURIComponent(`Check out this image: ${uploadUrl}`);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber_me}&text=${message}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber_client}&text=${message}`;
 
     
     window.open(whatsappUrl, '_blank');// Show toast notification if desired
