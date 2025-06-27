@@ -82,7 +82,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ images, onImagesChange, selec
                 <p className="text-gray-600 manrope-extralight mb-2">Click or drag&drop an intraoral image.</p>
                 <p className="text-gray-600 manrope-extralight mb-1">Make sure that:</p>
                 <ol className="text-gray-600 manrope-extralight list-decimal list-outside ml-5 text-sm">
-                  <li className="mb-1">Classic Vita Shade is flush and on the same plane as the target tooth</li>
+                     <li className="mb-1">Classic Vita Shade is flush and on the same plane as the target tooth</li>
                   <li>Light is uniform (indirect light is best)</li>
                 </ol>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 import { MobileCard } from '../MobileLayout';
 import { Button } from '@/components/ui/button';
@@ -7,12 +7,29 @@ import { Label } from '@/components/ui/label';
 import { TabSystem, TabContent } from '../TabSystem';
 import { Share2, Copy, Save, FileDown, Printer } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { createClient } from '@supabase/supabase-js'
+import toast from 'react-hot-toast';
+
+function generateRandomString(length = 10) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  while (result.length < length) {
+    const char = chars.charAt(Math.floor(Math.random() * chars.length));
+    if (!result.includes(char)) result += char;
+  }
+  return result;
+}
 
 const ResultsPhase: React.FC = () => {
   const { state, resetWorkflow } = useWorkflow();
   const [activeTab, setActiveTab] = useState('summary');
   const [caseName, setCaseName] = useState('');
   const [notes, setNotes] = useState('');
+  const [fileName, setFileName] = useState("");
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+  const [uploadUrl, setUploadUrl] = useState('');
+  const supabase = createClient(supabaseUrl, supabaseKey)
 
   const handleSaveCase = () => {
     // In real implementation, this would save the case locally
@@ -20,15 +37,51 @@ const ResultsPhase: React.FC = () => {
   };
 
   const handleShareLink = () => {
-    // In real implementation, this would generate a shareable link
-    navigator.clipboard.writeText('https://toothshade.vision/shared/abc123');
-    // Show toast notification
+    if (!uploadUrl) {
+      toast.error('No link to share!');
+      return;
+    }
+    const phoneNumber_client = '358505151330';
+    const phoneNumber_me = '12145518680'; // Example India number
+    const message = encodeURIComponent(`Check out this image: ${uploadUrl}`);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber_me}&text=${message}`;
+
+    
+    window.open(whatsappUrl, '_blank');// Show toast notification if desired
   };
 
-  const handleSaveImage = () => {
-    // In real implementation, this would save the image with analysis overlay
-    console.log('Saving image with analysis overlay');
+  const handleSaveImage = async () => {
+    const file = state.processedImage;
+    if (!file) {
+      toast.error('No image to save!');
+      return;
+    }
+
+    setFileName(`media/${Date.now()}_${file.name}`) ;
+
+    const { error } = await supabase.storage
+      .from('dentist')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
+
+    if (error) {
+      toast.error('Failed to save image!');
+      return;
+    }
+    toast.success('Image saved successfully!');
   };
+
+  useEffect(() => {
+  // Get the public URL
+  const { data: publicUrlData } = supabase.storage
+  .from('dentist')
+  .getPublicUrl(fileName);
+
+  setUploadUrl(publicUrlData.publicUrl);
+  }, [fileName])
 
   return (
     <div className="space-y-6 px-2 sm:px-4 py-4 w-full max-w-2xl mx-auto min-h-screen">

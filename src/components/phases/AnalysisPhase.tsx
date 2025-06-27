@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import ColorAnalysisCanvas from '@/components/ColorAnalysisCanvas';
 
 const AnalysisPhase: React.FC = () => {
-  const { state, updateAnalysisData, goToPreviousPhase, goToNextPhase } = useWorkflow();
+  const { state, updateAnalysisData, goToPreviousPhase, goToNextPhase, setProcessedImage } = useWorkflow();
   const { features, toggleFeature, updateCircleSizeSettings} = useFeatures();
   const [activeTab, setActiveTab] = useState('controls');
   const [analysisCircleSize, setAnalysisCircleSize] = useState(15);
@@ -24,8 +24,6 @@ const AnalysisPhase: React.FC = () => {
     officialHsv?: { h: number; s: number; v: number };
     shade: string;
   } | null>(null);
-  const [calibrationMode, setCalibrationMode] = useState(false);
-  const [calibrationShade, setCalibrationShade] = useState<string>("");
   const [selectedPixelData, setSelectedPixelData] = useState<any>(null);
   const [calibrationPoints, setCalibrationPoints] = useState<{ 
     L: number; a: number; b: number; 
@@ -103,6 +101,15 @@ const AnalysisPhase: React.FC = () => {
     setSelectedImage(uploadedImageUrl);
   }, []);
 
+  useEffect(() => {
+    if (state.uploadedImage) {
+      handleImageProcess(state.uploadedImage);
+    }
+  }, [state.currentPhase, state.uploadedImage]);
+
+  const handleImageProcess = (processedFile) => {
+    setProcessedImage(processedFile);
+  };
 
   return (
     <div className="px-2 sm:px-4 py-4 w-full max-w-4xl mx-auto bg-[#ecedef] min-h-screen">
@@ -359,7 +366,10 @@ const AnalysisPhase: React.FC = () => {
           <ArrowLeft className="w-4 h-4 mr-2" /> Back
         </button>
         <button
-          onClick={goToNextPhase}
+          onClick={() => {
+            handleImageProcess(state.uploadedImage);
+            goToNextPhase();
+          }}
           className="flex items-center w-full sm:w-auto justify-center px-6 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 transition-all duration-200 font-manrope font-medium shadow-sm hover:shadow-md"
         >
           Next <ArrowRight className="w-4 h-4 ml-2" />

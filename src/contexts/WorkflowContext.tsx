@@ -40,6 +40,7 @@ export interface WorkflowState {
   canGoBack: boolean;
   canProceed: boolean;
   uploadedImage: File | null;
+  processedImage: File | null;
 }
 
 interface WorkflowContextType {
@@ -51,6 +52,7 @@ interface WorkflowContextType {
   goToNextPhase: () => void;
   goToPreviousPhase: () => void;
   resetWorkflow: () => void;
+  setProcessedImage: (file: File | null) => void;
 }
 
 const initialCalibrationState: CalibrationState = {
@@ -79,6 +81,7 @@ const initialState: WorkflowState = {
   canGoBack: false,
   canProceed: false,
   uploadedImage: null,
+  processedImage: null
 };
 
 const WorkflowContext = createContext<WorkflowContextType | undefined>(undefined);
@@ -103,6 +106,14 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({ children }) 
     setState(prev => ({
       ...prev,
       uploadedImage: file,
+      canProceed: file !== null,
+    }));
+  };
+
+  const setProcessedImage = (file: File | null) => {
+    setState(prev => ({
+      ...prev,
+      processedImage: file,
       canProceed: file !== null,
     }));
   };
@@ -166,6 +177,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({ children }) 
         updateAnalysisData,
         goToNextPhase,
         goToPreviousPhase,
+        setProcessedImage, 
         resetWorkflow,
       }}
     >
