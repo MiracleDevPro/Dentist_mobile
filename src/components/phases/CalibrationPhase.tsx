@@ -15,9 +15,9 @@ import { loadVitaShades } from "@/utils/shadeMatcher";
 import { toast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { CalibrationExposureMask } from "../CalibrationExposureMask";
 import { Info } from "lucide-react";
 import { useFeatures } from "@/contexts/FeaturesContext";
+import { Switch } from "@/components/ui/switch";
 
 const CalibrationPhase: React.FC = () => {
   const { state, updateCalibrationData, goToNextPhase, goToPreviousPhase } =
@@ -59,7 +59,14 @@ const CalibrationPhase: React.FC = () => {
   });
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [skipDialogOpen, setSkipDialogOpen] = useState(false);
-  const { updateCircleSizeSettings } = useFeatures();
+  const {
+    features,
+    toggleFeature,
+    circleSizeSettings,
+    updateCircleSizeSettings,
+    exposureMaskSettings,
+    updateExposureMaskSettings,
+  } = useFeatures();
 
   useEffect(() => {
     setSelectedImage(uploadedImageUrl);
@@ -93,6 +100,9 @@ const CalibrationPhase: React.FC = () => {
     enabled: boolean;
     value: number;
   }) => {
+    updateExposureMaskSettings({
+      maskIntensity: newState[0] / 100,
+    });
     setExposureMask(newState);
     updateCalibrationData({ exposureMask: newState });
   };
@@ -506,6 +516,9 @@ const CalibrationPhase: React.FC = () => {
                 </div>
                 <Slider
                   id="circle-size"
+                  defaultValue={[
+                    circleSizeSettings.calibrationCircleScale * 10,
+                  ]}
                   min={5}
                   max={50}
                   step={1}
@@ -518,11 +531,51 @@ const CalibrationPhase: React.FC = () => {
               </div>
 
               {/* Exposure Masking Control */}
-              <div className="border-t border-gray-200 pt-4">
-                <CalibrationExposureMask
-                  state={exposureMask}
-                  onChange={handleExposureMaskingChange}
-                />
+              <div className="border-t border-gray-200">
+                <div className="flex items-center mt-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Exposure Masking
+                  </label>
+                  <Switch
+                    id="exposure-masking-toggle"
+                    className="data-[state=checked]:bg-gray-400 data-[state=unchecked]:bg-gray-200 ml-10"
+                    checked={features.useExposureMasking}
+                    onCheckedChange={() => toggleFeature("useExposureMasking")}
+                  />
+                </div>
+
+                {features.useExposureMasking && (
+                  <div className="py-3  pr-2 flex flex-col mt-1 mb-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Exposure Mask: Hides over/underexposed areas
+                      </label>
+                      <span className="text-sm font-medium text-gray-700">
+                        {Math.round(exposureMaskSettings.maskIntensity * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-gray-700">10%</span>
+                      <Slider
+                        value={[exposureMaskSettings.maskIntensity * 100]}
+                        min={10}
+                        max={100}
+                        step={2}
+                        className="flex-1 bg-gray-300"
+                        onValueChange={(values) => {
+                          updateExposureMaskSettings({
+                            maskIntensity: values[0] / 100,
+                          });
+                        }}
+                      />
+                      <span className="text-xs text-gray-700">100%</span>
+                    </div>
+                    <p className="text-xs text-gray-700 mt-1">
+                      Adjusts how aggressively masking is applied to
+                      over/underexposed areas
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
