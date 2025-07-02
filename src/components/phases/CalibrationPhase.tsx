@@ -15,7 +15,6 @@ import { loadVitaShades } from "@/utils/shadeMatcher";
 import { toast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { Info } from "lucide-react";
 import { useFeatures } from "@/contexts/FeaturesContext";
 import { Switch } from "@/components/ui/switch";
 
@@ -57,8 +56,6 @@ const CalibrationPhase: React.FC = () => {
     enabled: state.calibrationData.exposureMask.enabled,
     value: state.calibrationData.exposureMask.value,
   });
-  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
-  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
   const {
     features,
     toggleFeature,
@@ -500,19 +497,14 @@ const CalibrationPhase: React.FC = () => {
               {/* Circle Size Control */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mt-2 mb-2">
                     <Label htmlFor="circle-size" className="font-medium">
                       Calibration Circle Size
                     </Label>
-                    <Button
-                      type="button"
-                      onClick={() => setInfoDialogOpen(true)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <Info className="h-4 w-4" />
-                    </Button>
                   </div>
-                  <span className="text-sm font-medium">{circleSize}px</span>
+                  <span className="text-sm font-medium mt-2 mb-2">
+                    {circleSize}px
+                  </span>
                 </div>
                 <Slider
                   id="circle-size"
